@@ -33,6 +33,17 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
+svm = SVC(class_weight='balanced')
+param_grid = {
+    'C': [0.01, 0.1, 1, 10, 100, 1000],
+    'gamma': ['scale', 'auto'],
+    'kernel': ['linear', 'rbf', 'poly'],
+    'degree': [2, 3, 4]
+}
+grid_search = GridSearchCV(svm, param_grid, cv=5)
+grid_search.fit(X_train_scaled, y_train)
+best_svm = grid_search.best_estimator_
+
 st.title("Predicción de fertilidad en hombres utilizando Super Vector Machine")
 st.write("""
 La aplicación utiliza SVM para predecir si un hombre es fértil dependiendo de su estilo de vida (cirugías, tiempo que emplea sentado, si fuma, edad
@@ -40,17 +51,17 @@ La aplicación utiliza SVM para predecir si un hombre es fértil dependiendo de 
 """)
 
 def entrenar_y_mostrar_modelo(best_svm):
-    y_pred = best_svm.decision_function(X_test_scaled)
+    y_pred = best_svm.predict(X_test_scaled)
 
-    accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
+    accuracySVM = accuracy_score(y_test, y_pred)
+    precisionSVM = precision_score(y_test, y_pred, zero_division=1)
+    recallSVM = recall_score(y_test, y_pred)
+    f1SVM = f1_score(y_test, y_pred)
 
-    st.write(f"Accuracy: {accuracy:.4f}")
-    st.write(f"Precision: {precision:.4f}")
-    st.write(f"Recall: {recall:.4f}")
-    st.write(f"F1 Score: {f1:.4f}")
+    st.write(f"Accuracy: {accuracySVM:.4f}")
+    st.write(f"Precision: {precisionSVM:.4f}")
+    st.write(f"Recall: {recallSVM:.4f}")
+    st.write(f"F1 Score: {f1SVM:.4f}")
 
     y_probs = best_svm.decision_function(X_test_scaled)
     auc = roc_auc_score(y_test, y_probs)
@@ -69,14 +80,5 @@ def entrenar_y_mostrar_modelo(best_svm):
     ax.legend(loc="lower right")
     st.pyplot(fig)
 '''
-svm = SVC(class_weight='balanced')
-param_grid = {
-    'C': [0.01, 0.1, 1, 10, 100, 1000],
-    'gamma': ['scale', 'auto'],
-    'kernel': ['linear', 'rbf', 'poly'],
-    'degree': [2, 3, 4]
-}
-grid_search = GridSearchCV(svm, param_grid, cv=5)
-grid_search.fit(X_train_scaled, y_train)
-best_svm = grid_search.best_estimator_
+
 entrenar_y_mostrar_modelo(best_svm)
