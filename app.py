@@ -38,8 +38,8 @@ La aplicación utiliza SVM para predecir si un hombre es fértil dependiendo de 
     y en qué época del año se hizo la prueba)
 """)
 
-def entrenar_y_mostrar_modelo(best_dt):
-    y_pred = best_dt.predict(X_test_scaled)
+def entrenar_y_mostrar_modelo(best_svm):
+    y_pred = best_svm.predict(X_test_scaled)
 
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
@@ -51,7 +51,7 @@ def entrenar_y_mostrar_modelo(best_dt):
     st.write(f"Recall: {recall:.4f}")
     st.write(f"F1 Score: {f1:.4f}")
 
-    y_score = best_dt.predict_proba(X_test_scaled)[:, 1]
+    y_score = best_svm.predict_proba(X_test_scaled)[:, 1]
     fpr, tpr, _ = roc_curve(y_test, y_score)
     roc_auc = auc(fpr, tpr)
 
