@@ -3,7 +3,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.svm import SVC
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_curve, auc
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score,auc
+from sklearn.metrics import roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
@@ -39,7 +40,7 @@ La aplicación utiliza SVM para predecir si un hombre es fértil dependiendo de 
 """)
 
 def entrenar_y_mostrar_modelo(best_svm):
-    y_pred = best_svm.predict(X_test_scaled)
+    y_pred = best_svm.decision_function(X_test_scaled)
 
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
@@ -51,14 +52,14 @@ def entrenar_y_mostrar_modelo(best_svm):
     st.write(f"Recall: {recall:.4f}")
     st.write(f"F1 Score: {f1:.4f}")
 
-    y_score = best_svm.predict_proba(X_test_scaled)[:, 1]
-    fpr, tpr, _ = roc_curve(y_test, y_score)
-    roc_auc = auc(fpr, tpr)
+    y_probs = best_svm.decision_function(X_test_scaled)
+    auc = roc_auc_score(y_test, y_probs)
+    fpr, tpr, thresholds = roc_curve(y_test, y_probs)
 
-    st.write(f"AUC: {roc_auc:.4f}")
+    st.write(f"AUC: {auc:.4f}")
     
     fig, ax = plt.subplots()
-    ax.plot(fpr, tpr, label=f'ROC curve (AUC = {roc_auc:.2f})')
+    ax.plot(fpr, tpr, label=f'ROC curve (AUC = {auc:.2f})')
     ax.plot([0, 1], [0, 1], 'k--', label='No Skill')
     ax.set_xlim([0.0, 1.0])
     ax.set_ylim([0.0, 1.05])
