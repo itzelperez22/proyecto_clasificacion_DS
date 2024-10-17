@@ -68,7 +68,7 @@ def entrenar_y_mostrar_modelo(best_svm):
     fpr, tpr, thresholds = roc_curve(y_test, y_probs)
 
     st.write(f"AUC: {auc:.4f}")
-    '''
+    
     fig, ax = plt.subplots()
     ax.plot(fpr, tpr, label=f'ROC curve (AUC = {auc:.2f})')
     ax.plot([0, 1], [0, 1], 'k--', label='No Skill')
@@ -79,6 +79,5 @@ def entrenar_y_mostrar_modelo(best_svm):
     ax.set_title('ROC Curve - Decision Tree')
     ax.legend(loc="lower right")
     st.pyplot(fig)
-'''
 
 entrenar_y_mostrar_modelo(best_svm)
